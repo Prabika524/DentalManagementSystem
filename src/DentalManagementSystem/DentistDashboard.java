@@ -4,122 +4,74 @@ package DentalManagementSystem;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-public class DentistDashboard extends Application {
+import java.time.LocalDate;
 
-    private Dentist dentist;
-
-    public static void main(String[] args) {
-        launch(args);
-    }
+public class AppointmentBooking extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        dentist = new Dentist(1, "Dr. Smith");
+        // Create the layout
+        GridPane grid = new GridPane();
+        grid.setVgap(10);
+        grid.setHgap(10);
 
-        Pane root = new Pane();
+        // Create components
+        Label patientIdLabel = new Label("Patient ID:");
+        TextField patientIdField = new TextField();
 
-        // Labels
-        Label lblPatientId = new Label("Patient ID:");
-        lblPatientId.setLayoutX(20);
-        lblPatientId.setLayoutY(20);
-        ComboBox<Integer> cmbPatientId = new ComboBox<>();
-        cmbPatientId.getItems().addAll(101, 102, 103); // Sample patient IDs
-        cmbPatientId.setLayoutX(120);
-        cmbPatientId.setLayoutY(20);
+        Label dateLabel = new Label("Select Date:");
+        DatePicker datePicker = new DatePicker();
+        datePicker.setValue(LocalDate.now());
 
-        Label lblTreatment = new Label("Treatment:");
-        lblTreatment.setLayoutX(20);
-        lblTreatment.setLayoutY(60);
-        ComboBox<String> cmbTreatment = new ComboBox<>();
-        cmbTreatment.getItems().addAll("cleaning", "Filling", "checkup");
-        cmbTreatment.setLayoutX(120);
-        cmbTreatment.setLayoutY(60);
+        Label treatmentLabel = new Label("Select Treatment:");
+        ComboBox<String> treatmentComboBox = new ComboBox<>();
+        treatmentComboBox.getItems().addAll("Cleaning", "Filling", "Checkup");
 
-        Label lblMedicine = new Label("Medicine:");
-        lblMedicine.setLayoutX(20);
-        lblMedicine.setLayoutY(100);
-        ComboBox<String> cmbMedicine = new ComboBox<>();
-        cmbMedicine.getItems().addAll("Ibuprofen", "Amoxicillin", "Paracetamol");
-        cmbMedicine.setLayoutX(120);
-        cmbMedicine.setLayoutY(100);
+        Button bookButton = new Button("Book Appointment");
+        Button cancelButton = new Button("Cancel Appointment");
 
-        // Buttons
-        Button btnViewAppointments = new Button("View Appointments");
-        btnViewAppointments.setLayoutX(20);
-        btnViewAppointments.setLayoutY(150);
-        btnViewAppointments.setOnAction(e -> dentist.viewAppointments());
+        // Add components to grid
+        grid.add(patientIdLabel, 0, 0);
+        grid.add(patientIdField, 1, 0);
+        grid.add(dateLabel, 0, 1);
+        grid.add(datePicker, 1, 1);
+        grid.add(treatmentLabel, 0, 2);
+        grid.add(treatmentComboBox, 1, 2);
+        grid.add(bookButton, 1, 3);
+        grid.add(cancelButton, 0, 3);
 
-        Button btnUpdateTreatment = new Button("Update Treatment");
-        btnUpdateTreatment.setLayoutX(160);
-        btnUpdateTreatment.setLayoutY(150);
-        btnUpdateTreatment.setOnAction(e -> {
-            Integer patientId = cmbPatientId.getValue();
-            String treatmentDetails = cmbTreatment.getValue();
-            if (patientId != null && treatmentDetails != null) {
-                dentist.updateTreatment(patientId, treatmentDetails);
+        // Event handler for booking appointment
+        bookButton.setOnAction(event -> {
+            String patientId = patientIdField.getText();
+            LocalDate appointmentDate = datePicker.getValue();
+            String treatment = treatmentComboBox.getValue();
+            if (patientId.isEmpty() || treatment == null) {
+                System.out.println("Please fill all fields.");
             } else {
-                showAlert("Error", "Please select a Patient ID and Treatment.");
+                System.out.println("Appointment booked for Patient ID: " + patientId +
+                        " on " + appointmentDate + " with treatment: " + treatment);
             }
         });
 
-        Button btnPrescribeMedicine = new Button("Prescribe Medicine");
-        btnPrescribeMedicine.setLayoutX(20);
-        btnPrescribeMedicine.setLayoutY(200);
-        btnPrescribeMedicine.setOnAction(e -> {
-            Integer patientId = cmbPatientId.getValue();
-            String medicine = cmbMedicine.getValue();
-            if (patientId != null && medicine != null) {
-                dentist.prescribeMedicine(patientId, medicine);
-            } else {
-                showAlert("Error", "Please select a Patient ID and Medicine.");
-            }
+        // Event handler for canceling appointment
+        cancelButton.setOnAction(event -> {
+            patientIdField.clear();
+            datePicker.setValue(LocalDate.now());
+            treatmentComboBox.setValue(null);
+            System.out.println("Appointment canceled.");
         });
 
-        // Add elements to Pane
-        root.getChildren().addAll(lblPatientId, cmbPatientId,
-                lblTreatment, cmbTreatment,
-                lblMedicine, cmbMedicine,
-                btnViewAppointments, btnUpdateTreatment, btnPrescribeMedicine);
-
-        // Scene and Stage setup
-        Scene scene = new Scene(root, 400, 270);
-        primaryStage.setTitle("Dentist Dashboard");
+        // Scene setup
+        Scene scene = new Scene(grid, 400, 300);
+        primaryStage.setTitle("Book Appointment");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    // Method to show alert messages
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-}
-
-// Dentist Class
-class Dentist {
-    private int id;
-    private String name;
-
-    public Dentist(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public void viewAppointments() {
-        System.out.println("Viewing appointments for Dr. " + name);
-    }
-
-    public void updateTreatment(int patientId, String treatmentDetails) {
-        System.out.println("Updated treatment for patient " + patientId + ": " + treatmentDetails);
-    }
-
-    public void prescribeMedicine(int patientId, String medicine) {
-        System.out.println("Prescribed medicine to patient " + patientId + ": " + medicine);
+    public static void main(String[] args) {
+        launch(args);
     }
 }
