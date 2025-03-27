@@ -64,7 +64,11 @@ public class LoginScreen extends Application {
             } else if (username.equals("dr_John") && password.equals("456")) {
                 statusLabel.setText("Logged in as Dentist");
                 
-            } else if (username.equals("prati") && password.equals("789")) {
+            }else if (username.equals("roro") && password.equals("789")) {
+                    statusLabel.setText("Logged in as Admin");
+                
+            } 
+            else if (username.equals("prati") && password.equals("789")) {
                 statusLabel.setText("Logged in as Receptionist");
             }else{
                 statusLabel.setText("login");
