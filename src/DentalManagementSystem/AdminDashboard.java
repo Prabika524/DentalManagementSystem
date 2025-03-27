@@ -15,6 +15,7 @@ public class AdminDashboard extends Application {
         launch(args);
     }
 
+    
     @Override
     public void start(Stage primaryStage) {
         // Create an Admin instance
